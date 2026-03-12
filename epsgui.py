@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog
 import webbrowser
 import tkinter.font as tkFont
 from matplotlib.figure import Figure
@@ -11,7 +12,9 @@ esguiy=600
 graphx=600
 graphy=300
 chcount=8
-maxwords=5000
+chapters=[1, 2, 3, 4, 5, 6, 7, 8, 9]
+chwords=[1204, 750, 251, 2145, 3125, 800, 1902, 750, 2400]
+maxwords=3500
 
 epsgui = tk.Tk(className="E-Pub Stats") #window widget
 epsgui.geometry(f"{esguix}x{esguiy}")
@@ -46,10 +49,17 @@ wpmlink.pack()
 closebutton = tk.Button(epsgui, text="Close", width =20, font=btnfont, command=epsgui.destroy)
 closebutton.pack(side="bottom", pady=20)
 
-graphframe = tk.Frame(epsgui, bg="lightgrey", width=graphx, height=graphy)
-graphframe.pack(side="bottom", padx=20, pady=20)
+grframe = tk.Frame(epsgui, bg="lightgrey", width=graphx, height=graphy)
+grframe.pack(side="bottom", padx=20, pady=20)
 
-espgraph = Figure(figsize=(4,4), dpi = 100)
+#graph
+epsgraph = Figure(figsize=(4,4), dpi = 100) #create figure for graph
+graxes = epsgraph.add_subplot(111)
+graxes.plot(chapters, chwords)
+
+grcanvas = FigureCanvasTkAgg(epsgraph, master=grframe)
+grcanvas.draw()
+grcanvas.get_tk_widget().pack()
 
 epsgui.mainloop()
 
