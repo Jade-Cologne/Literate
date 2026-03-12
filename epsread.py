@@ -1,3 +1,6 @@
+import warnings #annoying deprication warning in debugging
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 import io
 from pathlib import Path
 
@@ -27,19 +30,28 @@ def getdata(bookpath):
     textget.bodytext = [] #body text handler
     textget.isbody = False #body tag boolean
 
-    chnum = 0
+    # chnum = 0
+    wordcounts = [] #list of wordcounts
+    maxwc = 0
+    avgwc = 0
+    
     for chapter_id, linear in book.spine: #iterate through chapter list
         if linear == "yes": #and chapter_id != "titlepage": #get rid of unordered items
             textget.bodytext = [] #reset parser text every chapter
             testchapter = book.get_item_with_id(chapter_id) #get chapter item
             textget.feed(testchapter.get_content().decode('utf-8')) #feed the text content of the chapter to the parser
-            chtext = ' '.join(textget.bodytext)
+            # chtext = ' '.join(textget.bodytext) #raw text
             chwords = ' '.join(textget.bodytext).split() #get words by combining html elements and separating words
-            chwc = len(chwords) #get wordcount via length of string array
+            chwc = len(chwords) #get wordcount via length of string array | this step could be done inline to get rid of chwords but looks terrible
             if chwc > 100:
-                chnum += 1
-                print("Chapter",chnum)
-                print("Wordcount:",chwc)
+                # chnum += 1
+                # print("Chapter",chnum)
+                wordcounts.append(chwc)
+                # print("Wordcount:",chwc)
+    maxwc = max(wordcounts)
+    avgwc = (sum(wordcounts) // len(wordcounts))
+    print(wordcounts, "max word count=", maxwc, "average word count=", avgwc)
+    return wordcounts
 
 #print(testchapter.get_content().decode('utf-8'))
 #print(textget.bodytext)

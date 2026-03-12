@@ -8,10 +8,10 @@ import epsread
 
 bgcolor="grey"
 msgcolor="white"
-esguix=900
-esguiy=600
-graphx=600
-graphy=300
+esguix=1200
+esguiy=800
+graphx=950
+graphy=600
 chcount=8
 chapters=[1, 2, 3, 4, 5, 6, 7, 8, 9]
 chwords=[1204, 750, 251, 2145, 3125, 800, 1902, 750, 2400] #sample data
@@ -35,8 +35,8 @@ btnfont = tkFont.Font(family="Calibre", size=14)
 landframe = tk.Frame(bg=bgcolor) #file selection frame
 landframe.pack()
 
-uploadbtn = tk.Button(landframe, text="Open EPub", width=20, command=getfile)
-uploadbtn.pack()
+uploadbtn = tk.Button(landframe, text="Open EPub", width=20, padx=10, pady=10, command=getfile)
+uploadbtn.pack(pady=50)
 
 dataframe = tk.Frame(bg=bgcolor) #graph page frame
 #dataframe.pack(side="top")
@@ -46,7 +46,7 @@ wpmframe.pack(side="top")
 
 #top-packed widgets
 
-wpmlabelleft = tk.Label(wpmframe, text="Enter your reading speed: ", fg=msgcolor, font=msgfont)
+wpmlabelleft = tk.Label(wpmframe, text="For reading time estimates, enter your reading speed: ", fg=msgcolor, font=msgfont)
 wpmlabelleft.grid(row=0, column=0)
 wpmlabelleft.configure(bg=bgcolor)
 
@@ -71,12 +71,12 @@ grframe = tk.Frame(dataframe, bg="lightgrey", width=graphx, height=graphy)
 grframe.pack(side="bottom", padx=20, pady=20)
 
 #graph
-epsgraph = Figure(figsize=(4,4), dpi = 100) #create figure for graph
-graxes = epsgraph.add_subplot(111)
+epsgraph = Figure(figsize=(9.5,6), dpi = 100) #create matlib figure for graph
+graxes = epsgraph.add_subplot(111) #create axes to plot
 graxes.plot(chapters, chwords)
 
-grcanvas = FigureCanvasTkAgg(epsgraph, master=grframe)
-grcanvas.draw()
+grcanvas = FigureCanvasTkAgg(epsgraph, master=grframe) #compatibility class for matlibplot and tkinter/assign frame
+grcanvas.draw() #render graph
 grcanvas.get_tk_widget().pack()
 
 epsgui.mainloop()
