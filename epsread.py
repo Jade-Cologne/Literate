@@ -40,18 +40,16 @@ def getdata(bookpath):
             textget.bodytext = [] #reset parser text every chapter
             testchapter = book.get_item_with_id(chapter_id) #get chapter item
             textget.feed(testchapter.get_content().decode('utf-8')) #feed the text content of the chapter to the parser
-            # chtext = ' '.join(textget.bodytext) #raw text
             chwords = ' '.join(textget.bodytext).split() #get words by combining html elements and separating words
             chwc = len(chwords) #get wordcount via length of string array | this step could be done inline to get rid of chwords but looks terrible
             if chwc > 100:
-                # chnum += 1
-                # print("Chapter",chnum)
                 wordcounts.append(chwc)
-                # print("Wordcount:",chwc)
+                
     maxwc = max(wordcounts)
     avgwc = (sum(wordcounts) // len(wordcounts))
-    # print(wordcounts, "max word count=", maxwc, "average word count=", avgwc)
-    return wordcounts, maxwc, avgwc
+    title = f"{book.get_metadata('DC', 'creator')[0][0]} - { book.get_metadata('DC', 'title')[0][0]}"
+    
+    return wordcounts, maxwc, avgwc, title
 
 #print(testchapter.get_content().decode('utf-8'))
 #print(textget.bodytext)

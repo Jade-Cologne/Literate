@@ -4,6 +4,7 @@ import webbrowser
 import tkinter.font as tkFont
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import mplcursors    #Work on this next
 import epsread
 
 bgcolor="grey"
@@ -12,23 +13,31 @@ esguix=1200
 esguiy=800
 graphx=950
 graphy=600
-chapters=[1, 2, 3, 4, 5, 6, 7, 8, 9]
-chwords=[1204, 750, 251, 2145, 3125, 800, 1902, 750, 2400] #sample data
+# chapters=[1, 2, 3, 4, 5, 6, 7, 8, 9]
+# chwords=[1204, 750, 251, 2145, 3125, 800, 1902, 750, 2400] #sample data
 chwc = []
 maxwords=0
 avgwords=0
+bookname = " "
 
 def getfile():
     filepath = filedialog.askopenfilename(filetypes=[("Epub filetype", "*.epub")])
     if not filepath:
         return
-    chwc, maxwords, avgwords = epsread.getdata(filepath)
-    print(chwc, maxwords, avgwords)
-    graxes.plot(range(1, len(chwc)+1), chwc)
+    chwc, maxwords, avgwords, bookname = epsread.getdata(filepath)
+    # print(chwc, maxwords, avgwords, bookname)
+    
+    graxes.plot(range(1, len(chwc)+1), chwc, marker='o') #these have to be set here due to data access
+    graxes.set_xticks(range(1, len(chwc)+1))
+    graxes.axhline(y=avgwords)
+    graxes.set_title(bookname)
+    graxes.set_xlabel("Chapters")
+    graxes.set_ylabel("Word count")
+    
     grcanvas.draw() #render graph
+    
     landframe.pack_forget()
     dataframe.pack(side="top")
-
 
 epsgui = tk.Tk(className="E-Pub Stats") #window widget
 epsgui.geometry(f"{esguix}x{esguiy}")
@@ -79,6 +88,7 @@ grframe.pack(side="bottom", padx=20, pady=20)
 
 epsgraph = Figure(figsize=(9.5,6), dpi = 100) #create matlib figure for graph
 graxes = epsgraph.add_subplot(111) #create axes to plot
+graxes.grid(True)
 
 grcanvas = FigureCanvasTkAgg(epsgraph, master=grframe) #compatibility class for matlibplot and tkinter/assign frame
 grcanvas.get_tk_widget().pack()
