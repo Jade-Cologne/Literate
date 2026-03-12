@@ -12,18 +12,23 @@ esguix=1200
 esguiy=800
 graphx=950
 graphy=600
-chcount=8
 chapters=[1, 2, 3, 4, 5, 6, 7, 8, 9]
 chwords=[1204, 750, 251, 2145, 3125, 800, 1902, 750, 2400] #sample data
-maxwords=3500
+chwc = []
+maxwords=0
+avgwords=0
 
 def getfile():
     filepath = filedialog.askopenfilename(filetypes=[("Epub filetype", "*.epub")])
     if not filepath:
         return
-    epsread.getdata(filepath)
+    chwc, maxwords, avgwords = epsread.getdata(filepath)
+    print(chwc, maxwords, avgwords)
+    graxes.plot(range(1, len(chwc)+1), chwc)
+    grcanvas.draw() #render graph
     landframe.pack_forget()
     dataframe.pack(side="top")
+
 
 epsgui = tk.Tk(className="E-Pub Stats") #window widget
 epsgui.geometry(f"{esguix}x{esguiy}")
@@ -70,13 +75,12 @@ closebutton.pack(side="bottom", pady=20)
 grframe = tk.Frame(dataframe, bg="lightgrey", width=graphx, height=graphy)
 grframe.pack(side="bottom", padx=20, pady=20)
 
-#graph
+#graph creation
+
 epsgraph = Figure(figsize=(9.5,6), dpi = 100) #create matlib figure for graph
 graxes = epsgraph.add_subplot(111) #create axes to plot
-graxes.plot(chapters, chwords)
 
 grcanvas = FigureCanvasTkAgg(epsgraph, master=grframe) #compatibility class for matlibplot and tkinter/assign frame
-grcanvas.draw() #render graph
 grcanvas.get_tk_widget().pack()
 
 epsgui.mainloop()

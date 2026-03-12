@@ -50,8 +50,8 @@ def getdata(bookpath):
                 # print("Wordcount:",chwc)
     maxwc = max(wordcounts)
     avgwc = (sum(wordcounts) // len(wordcounts))
-    print(wordcounts, "max word count=", maxwc, "average word count=", avgwc)
-    return wordcounts
+    # print(wordcounts, "max word count=", maxwc, "average word count=", avgwc)
+    return wordcounts, maxwc, avgwc
 
 #print(testchapter.get_content().decode('utf-8'))
 #print(textget.bodytext)
