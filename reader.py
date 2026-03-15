@@ -10,6 +10,8 @@ from ebooklib import epub
 import html.parser
 from html.parser import HTMLParser
 
+minwc=200
+
 def getdata(bookpath):
     book = epub.read_epub(bookpath, options={"ignore_ncx":True}) #sets up epubbook reader
 
@@ -30,10 +32,7 @@ def getdata(bookpath):
     textget.bodytext = [] #body text handler
     textget.isbody = False #body tag boolean
 
-    # chnum = 0
     wordcounts = [] #list of wordcounts
-    maxwc = 0
-    avgwc = 0
     
     for chapter_id, linear in book.spine: #iterate through chapter list
         if linear == "yes": #and chapter_id != "titlepage": #get rid of unordered items
@@ -42,14 +41,12 @@ def getdata(bookpath):
             textget.feed(testchapter.get_content().decode('utf-8')) #feed the text content of the chapter to the parser
             chwords = ' '.join(textget.bodytext).split() #get words by combining html elements and separating words
             chwc = len(chwords) #get wordcount via length of string array | this step could be done inline to get rid of chwords but looks terrible
-            if chwc > 100:
+            if chwc > minwc:
                 wordcounts.append(chwc)
                 
-    maxwc = max(wordcounts)
-    avgwc = (sum(wordcounts) // len(wordcounts))
     title = f"{book.get_metadata('DC', 'creator')[0][0]} - { book.get_metadata('DC', 'title')[0][0]}"
     
-    return wordcounts, maxwc, avgwc, title
+    return wordcounts, title
 
 #print(testchapter.get_content().decode('utf-8'))
 #print(textget.bodytext)

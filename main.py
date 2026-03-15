@@ -7,7 +7,7 @@ from matplotlib import rcParams
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import mplcursors    #Work on this next
-import epsread
+import reader
 
 bgcolor="gray55"
 pancolor="gray45"
@@ -21,34 +21,63 @@ graphy=700
 # chapters=[1, 2, 3, 4, 5, 6, 7, 8, 9]
 # chwords=[1204, 750, 251, 2145, 3125, 800, 1902, 750, 2400] #sample data
 chwc = []
+minwords=0
 maxwords=0
 avgwords=0
+userwpm=0
+avgwpm=250
 bookname = " "
 
 def getfile():
     filepath = filedialog.askopenfilename(filetypes=[("Epub filetype", "*.epub")])
     if not filepath:
         return
-    chwc, maxwords, avgwords, bookname = epsread.getdata(filepath)
+
+    # data variables
+    chwc, bookname = reader.getdata(filepath)
+    minwords = min(chwc)
+    minchnum = chwc.index(min(chwc))+1
+    maxwords = max(chwc)
+    maxchnum = chwc.index(max(chwc))+1
+    avgwords = (sum(chwc) // len(chwc))
     # print(chwc, maxwords, avgwords, bookname)
     
-    graxes.axhline(y=avgwords) # persistent average chapter length marker
-    graxes.plot(range(1, len(chwc)+1), chwc, marker='o') # these have to be set here due to data access
+    
+    # graph settings based on book info
+    graxes.plot(range(1, len(chwc)+1), chwc, marker='o') 
     graxes.set_xticks(range(1, len(chwc)+1)) # set x axis markers at every chapter
-    graxes.text(len(chwc) + 1, avgwords, f" Average length:\n {avgwords} words", va='center')
     graxes.set_title(bookname)
     graxes.set_xlabel("Chapters")
     graxes.set_ylabel("Word count")
-    epsgraph.tight_layout() # prevent words from exiting bounds
+
+    # annotations
+    graxes.annotate("Longest",xy=(maxchnum,maxwords),xytext=(0,10),textcoords="offset points", ha="center", va="bottom")
+    graxes.annotate("Shortest",xy=(minchnum,minwords),xytext=(0,-10),textcoords="offset points", ha="center", va="top")
+    graxes.axhline(y=avgwords) # persistent average chapter length marker
+    graxes.text(len(chwc) + 1, avgwords, f" Average\n length:\n {avgwords}\n words", va='center')
     
-    grcanvas.draw() #render graph
+    # side panel stats updates
+    avgstat.config(text=f"The average chapter length is {avgwords} words.")
+
+    litgraph.tight_layout() # prevent words from exiting bounds - must be done after text/annotations
     
+    # render graph
+    grcanvas.draw()
+
+    # switch frames
     landframe.pack_forget()
     infoframe.pack(fill="both", expand=True)
 
-epsgui = tk.Tk(className="E-Pub Stats") #window widget
-epsgui.geometry(f"{esguix}x{esguiy}")
-epsgui.configure(bg=bgcolor)
+
+def wpmcalc():
+    pass
+
+
+#tkinter objects
+
+litgui = tk.Tk(className="Literate") #window widget
+litgui.geometry(f"{esguix}x{esguiy}")
+litgui.configure(bg=bgcolor)
 
 msgfont = tkFont.Font(family=fontfam, size=14, weight="bold") #font settings
 btnfont = tkFont.Font(family=fontfam, size=12)
@@ -78,10 +107,10 @@ statsframe.pack_propagate(False)
 
 # side panel widgets
 
-stats = tk.Label(statsframe, text=f"The average chapter length is {avgwords} words.", fg=msgcolor, bg=pancolor, font=msgfont, wraplength=400)
-closebutton = tk.Button(statsframe, text="Close", width =20, font=btnfont, command=epsgui.destroy)
+avgstat = tk.Label(statsframe, fg=msgcolor, bg=pancolor, font=msgfont, wraplength=400)
+closebutton = tk.Button(statsframe, text="Close", width =20, font=btnfont, command=litgui.destroy)
 
-stats.pack()
+avgstat.pack()
 closebutton.pack(side="bottom", pady=20)
 
 
@@ -141,11 +170,11 @@ matplotlib.rcParams.update({"figure.facecolor":grcolor,
                            "axes.labelcolor":msgcolor,
                            "xtick.color":msgcolor,
                            "ytick.color":msgcolor}) #
-epsgraph = Figure(figsize=(10,7), dpi = 100) #create matlib figure for graph
-graxes = epsgraph.add_subplot(111) #create axes to plot
+litgraph = Figure(figsize=(10,7), dpi = 100) #create matlib figure for graph
+graxes = litgraph.add_subplot(111) #create axes to plot
 graxes.grid(True) #adds gridlines on ticks
 
-grcanvas = FigureCanvasTkAgg(epsgraph, master=grframe) #compatibility object for matlibplot and tkinter/assign frame
+grcanvas = FigureCanvasTkAgg(litgraph, master=grframe) #compatibility object for matlibplot and tkinter/assign frame
 grcanvas.get_tk_widget().pack()
 
-epsgui.mainloop()
+litgui.mainloop()
