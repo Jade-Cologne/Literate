@@ -44,7 +44,14 @@ def getfile():
     
     
     # graph settings based on book info
-    graxes.plot(range(1, len(chwc)+1), chwc, marker='o') 
+    graxes.plot(range(1, len(chwc)+1), chwc) # creates the line plot
+    
+    scatter = graxes.scatter(range(1, len(chwc)+1), chwc) # make scatter plot of hoverable points
+    cursor = mplcursors.cursor(scatter, hover=True) # makes points cursor hoverable
+    @cursor.connect("add")
+    def on_add(sel):
+        sel.annotation.set_text(f"Chapter {int(sel.index) + 1}\n{chwc[int(sel.index)]} words")
+    
     graxes.set_xticks(range(1, len(chwc)+1)) # set x axis markers at every chapter
     graxes.set_title(bookname)
     graxes.set_xlabel("Chapters")
